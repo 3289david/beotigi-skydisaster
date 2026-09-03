@@ -19,6 +19,33 @@ mvn package
 # target/Beotigi-1.0.0.jar 를 서버 plugins/ 폴더에 넣는다.
 ```
 
+## 설치 가이드
+
+1. **서버 준비** — [PaperMC 공식 사이트](https://papermc.io/downloads/paper)에서 26.2(build 121
+   이상) 서버 jar를 받는다. `eula.txt`에 `eula=true`로 동의하고, `java -jar paper-26.2-*.jar`로
+   한 번 실행해 기본 폴더 구조를 만든다. 실행 커맨드에 쓰는 Java는 **반드시 25 이상**이어야 한다
+   (`java -version`으로 확인, 아니면 서버 자체가 기동하지 않는다).
+2. **Void 월드 준비** — Beotigi는 하늘섬 지형 자체(빈 청크 제너레이터)는 만들지 않는다. 서버에
+   이미 존재하는 월드에 섬을 "얹는" 방식이므로, 진짜 스카이블럭처럼 하려면 별도 월드 생성기
+   (예: `Multiverse-Core` + `Multiverse-VoidGen`, 또는 `AsyncWorldEdit`의 void 프리셋 등)로
+   빈 월드를 하나 만들고 그 월드에서 플레이하는 걸 권장한다.
+3. **플러그인 설치** — `mvn package`로 빌드했거나 [Releases](../../releases)에서 받은
+   `Beotigi-1.0.0.jar`를 서버의 `plugins/` 폴더에 넣고 서버를 (재)시작한다. 콘솔에 `[Beotigi]
+   Beotigi 재해 시스템이 조용히 깨어났습니다.`가 뜨면 정상 로드된 것이다.
+4. **시작 섬 생성** — 각 플레이어가 원하는 월드에 들어가서 아래 중 하나를 실행한다 (숲/바위/초원
+   3인이 서로 다른 걸 고르는 걸 권장):
+   ```
+   /island forest
+   /island rock
+   /island plains
+   ```
+5. **(선택) 클라이언트용 미니맵** — 서버 쪽엔 미니맵 렌더링 기능이 없다. 녹화용 클라이언트에
+   [Xaero's Minimap](https://www.curseforge.com/minecraft/mc-mods/xaeros-minimap) 같은 모드를
+   설치하면 서버 설정 없이 바로 동작한다.
+6. **동작 확인** — 관리자 권한으로 `/beotigi status`를 입력해 현재 날씨 단계 등이 뜨는지
+   확인한다. 필요하면 `/beotigi forcestorm`, `/beotigi forcemeteor` 등으로 재해를 강제
+   발동시켜 테스트할 수 있다 (아래 "관리자 명령어" 표 참고).
+
 ## 들어있는 기능
 
 기획서의 18개 섹션을 전부 구현했다. 모든 수치(격화 확률, 발생 빈도 등)는 `config.yml`에서
@@ -75,6 +102,23 @@ mvn package
           |forcediscovery [type]|forcemerchant|forcecreature [whale|bird|bats]
           |forcenightevent [shower|bats]|give <item>|stop|reload
 ```
+
+## 스크린샷 / 영상
+
+_(추가 예정 — 실제 플레이 영상/스크린샷이 준비되면 여기에 링크와 함께 채워 넣기)_
+
+| 미리보기 | 설명 |
+| --- | --- |
+| _(이미지 없음)_ | 예: 폭풍 중 나무가 쓰러지는 장면 |
+| _(이미지 없음)_ | 예: 화산 폭발 순간 |
+| _(이미지 없음)_ | 예: 새로 발견한 폐허 섬 |
+
+영상 링크: _(유튜브 업로드 후 여기에 추가)_
+
+## 라이선스
+
+[MIT License](LICENSE) — 자유롭게 가져다 쓰고, 고치고, 다시 배포해도 된다. 다만 원저작자
+표시는 유지해줄 것.
 
 ## 알려진 제한
 
