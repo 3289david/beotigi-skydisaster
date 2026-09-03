@@ -1,0 +1,21 @@
+name: Beotigi
+version: '1.0.0'
+main: com.beotigi.skydisaster.BeotigiPlugin
+api-version: '26.2'
+author: danwoo
+description: 3인 하늘섬 생존 - 예고 없는 자연재해 콘텐츠
+folia-supported: false
+
+commands:
+  island:
+    description: 시작 섬을 생성합니다.
+    usage: /island <forest|rock|plains>
+  beotigi:
+    description: 재해 시스템 관리자 명령어
+    usage: /beotigi <status|forcestorm|forcemeteor|forcevoidstorm|stop|reload>
+    permission: beotigi.admin
+
+permissions:
+  beotigi.admin:
+    description: 재해 시스템을 강제로 제어할 수 있는 권한
+    default: op

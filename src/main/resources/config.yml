@@ -1,0 +1,43 @@
+# Beotigi - 재해 시스템 설정
+# 플레이어에게는 어떤 값도 노출되지 않습니다. 이 값들은 서버 운영자 전용 조절 다이얼입니다.
+
+weather:
+  # 비가 시작된 후, 매 tick(1초)마다 폭풍으로 격화될 확률
+  escalation-chance-per-second: 0.004
+  # 폭풍이 격화된 후 다시 약해질 확률 (매초)
+  deescalation-chance-per-second: 0.01
+  # STORM 단계에서 바람이 플레이어를 밀어내는 세기
+  wind-push-strength: 0.35
+  # SEVERE_STORM 단계에서 나무가 쓰러질 확률 (매초, 폭풍 지역 플레이어 기준)
+  tree-fall-chance-per-second: 0.03
+  # 가벼운 블록(나뭇잎, 횃불, 유리판 등)이 날아갈 확률
+  light-block-damage-chance-per-second: 0.02
+
+lightning:
+  # STORM 이상일 때 자연 번개 외에 추가로 번개가 칠 확률 (매초, 폭풍 지역 기준)
+  extra-strike-chance-per-second: 0.05
+
+flood:
+  # 강한 비(폭우)일 때 농장 범위 내 흙에 물이 찰 확률
+  flood-chance-per-second: 0.02
+  # 침수된 물이 원상복구 되기까지 걸리는 시간(초)
+  recede-after-seconds: 90
+
+meteor:
+  # 매 분마다 운석이 떨어질 확률 (밤에만 발생)
+  chance-per-minute: 0.01
+  crater-radius: 4
+
+voidstorm:
+  # 매 시간마다 공허 폭풍이 시작될 확률
+  chance-per-hour: 0.03
+  duration-seconds: 60
+  erosion-radius: 20
+
+structure:
+  # 폭풍 중, 로드된 청크를 스캔해 구조가 무너질지 검사하는 주기(초)
+  scan-interval-seconds: 15
+  # 한 번에 검사할 최대 청크 수 (성능 보호)
+  max-chunks-per-scan: 6
+  # 지지대 탐색 최대 블록 수 (BFS 한계, 성능 보호)
+  support-search-limit: 250
