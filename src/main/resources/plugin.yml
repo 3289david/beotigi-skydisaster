@@ -12,7 +12,7 @@ commands:
     usage: /island <forest|rock|plains>
   beotigi:
     description: 재해 시스템 관리자 명령어
-    usage: /beotigi <status|forcestorm|forcemeteor|forcevoidstorm|stop|reload>
+    usage: /beotigi <status|forcestorm|forcemeteor|forcevoidstorm|forcevolcano|forcediscovery|forcemerchant|forcecreature|forcenightevent|give|stop|reload>
     permission: beotigi.admin
 
 permissions:

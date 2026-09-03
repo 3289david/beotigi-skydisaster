@@ -34,6 +34,51 @@ voidstorm:
   duration-seconds: 60
   erosion-radius: 20
 
+discovery:
+  # 10분마다 새 섬이 나타날 확률
+  chance-per-interval: 0.25
+  min-distance: 300
+  max-distance: 1200
+  min-gap-between-islands: 150
+
+ecosystem:
+  scan-interval-seconds: 30
+  rabbit-overpopulation-threshold: 6
+  rabbit-litter-chance: 0.15
+  bee-search-radius: 12
+  no-bee-growth-penalty-chance: 0.25
+  wolf-pressure-sheep-threshold: 5
+  wolf-spawn-chance: 0.1
+
+growth:
+  scan-interval-seconds: 45
+  flower-spread-chance: 0.15
+  pond-formation-chance: 0.05
+  animal-growth-chance: 0.1
+  max-passive-animals-per-scan-area: 10
+
+village:
+  scan-interval-seconds: 60
+  min-beds-for-village: 1
+  min-doors-for-village: 1
+  migration-chance: 0.2
+  max-villagers-per-site: 8
+  shop-threshold-villagers: 4
+
+merchant:
+  chance-per-hour: 0.4
+  stay-minutes: 5
+
+creature:
+  chance-per-10-minutes: 0.08
+  max-concurrent: 3
+
+night-event:
+  blood-moon-chance: 0.05
+  meteor-shower-chance: 0.04
+  fog-chance: 0.08
+  bat-swarm-chance: 0.1
+
 structure:
   # 폭풍 중, 로드된 청크를 스캔해 구조가 무너질지 검사하는 주기(초)
   scan-interval-seconds: 15

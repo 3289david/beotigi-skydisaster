@@ -50,7 +50,24 @@ public class MeteorManager implements Listener {
     }
 
     public void forceStrike(Player nearPlayer) {
-        launchMeteor(nearPlayer);
+        launchMeteor(nearPlayer, false);
+    }
+
+    /** 유성우: 짧은 시간 동안 작은 운석 여러 개가 떨어진다 (전리품 상자 없음, 피해도 작음). */
+    public void startMeteorShower(World world) {
+        List<Player> players = world.getPlayers();
+        if (players.isEmpty()) return;
+
+        var rng = ThreadLocalRandom.current();
+        int count = rng.nextInt(6, 13);
+        for (int i = 0; i < count; i++) {
+            long delayTicks = i * rng.nextInt(20, 50);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                if (world.getPlayers().isEmpty()) return;
+                Player target = world.getPlayers().get(ThreadLocalRandom.current().nextInt(world.getPlayers().size()));
+                launchMeteor(target, true);
+            }, delayTicks);
+        }
     }
 
     private void tick() {
@@ -63,16 +80,17 @@ public class MeteorManager implements Listener {
 
             List<Player> players = world.getPlayers();
             Player target = players.get(rng.nextInt(players.size()));
-            launchMeteor(target);
+            launchMeteor(target, false);
             return;
         }
     }
 
-    private void launchMeteor(Player target) {
+    private void launchMeteor(Player target, boolean minor) {
         var rng = ThreadLocalRandom.current();
         World world = target.getWorld();
-        int dx = rng.nextInt(-40, 41);
-        int dz = rng.nextInt(-40, 41);
+        int range = minor ? 25 : 40;
+        int dx = rng.nextInt(-range, range + 1);
+        int dz = rng.nextInt(-range, range + 1);
         int gx = target.getLocation().getBlockX() + dx;
         int gz = target.getLocation().getBlockZ() + dz;
         int groundY = world.getHighestBlockYAt(gx, gz);
@@ -83,7 +101,7 @@ public class MeteorManager implements Listener {
             fb.setDropItem(false);
             fb.setHurtEntities(true);
             fb.setVelocity(new org.bukkit.util.Vector(0, -1.4, 0));
-            fb.setMetadata(META_KEY, new FixedMetadataValue(plugin, true));
+            fb.setMetadata(META_KEY, new FixedMetadataValue(plugin, minor));
         });
 
         world.playSound(spawnLoc, Sound.ENTITY_GHAST_SHOOT, 2f, 0.4f);
@@ -107,20 +125,21 @@ public class MeteorManager implements Listener {
         if (event.getEntityType() != EntityType.FALLING_BLOCK) return;
         if (!event.getEntity().hasMetadata(META_KEY)) return;
 
+        boolean minor = event.getEntity().getMetadata(META_KEY).get(0).asBoolean();
         event.setCancelled(true);
         Location impact = event.getBlock().getLocation();
         event.getEntity().remove();
-        createCrater(impact);
+        createCrater(impact, minor);
     }
 
-    private void createCrater(Location center) {
+    private void createCrater(Location center, boolean minor) {
         World world = center.getWorld();
         var rng = ThreadLocalRandom.current();
 
-        world.playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 3f, 0.8f);
-        world.spawnParticle(Particle.EXPLOSION, center, 3);
+        world.playSound(center, Sound.ENTITY_GENERIC_EXPLODE, minor ? 1.5f : 3f, 0.8f);
+        world.spawnParticle(Particle.EXPLOSION, center, minor ? 1 : 3);
 
-        int r = craterRadius;
+        int r = minor ? Math.max(1, craterRadius - 2) : craterRadius;
         for (int x = -r; x <= r; x++) {
             for (int y = -r; y <= 1; y++) {
                 for (int z = -r; z <= r; z++) {
@@ -149,12 +168,14 @@ public class MeteorManager implements Listener {
             }
         }
 
-        // 중심에 희귀 광물 보상 상자
-        Block chestSpot = center.clone().add(0, -1, 0).getBlock();
-        chestSpot.setType(Material.CHEST, false);
-        if (chestSpot.getState() instanceof org.bukkit.block.Chest chestState) {
-            Inventory inv = chestState.getBlockInventory();
-            fillMeteorLoot(inv, rng);
+        // 중심에 희귀 광물 보상 상자 (유성우의 작은 운석에는 없음)
+        if (!minor) {
+            Block chestSpot = center.clone().add(0, -1, 0).getBlock();
+            chestSpot.setType(Material.CHEST, false);
+            if (chestSpot.getState() instanceof org.bukkit.block.Chest chestState) {
+                Inventory inv = chestState.getBlockInventory();
+                fillMeteorLoot(inv, rng);
+            }
         }
     }
 
