@@ -39,6 +39,7 @@ public class WeatherManager {
 
     private final double escalationChance;
     private final double deescalationChance;
+    private final double suddenJumpChance;
     private final double windPushStrength;
     private final double treeFallChance;
     private final double lightBlockDamageChance;
@@ -50,6 +51,7 @@ public class WeatherManager {
         var cfg = plugin.getConfig();
         this.escalationChance = cfg.getDouble("weather.escalation-chance-per-second", 0.004);
         this.deescalationChance = cfg.getDouble("weather.deescalation-chance-per-second", 0.01);
+        this.suddenJumpChance = cfg.getDouble("weather.sudden-jump-chance-per-second", 0.0006);
         this.windPushStrength = cfg.getDouble("weather.wind-push-strength", 0.35);
         this.treeFallChance = cfg.getDouble("weather.tree-fall-chance-per-second", 0.03);
         this.lightBlockDamageChance = cfg.getDouble("weather.light-block-damage-chance-per-second", 0.02);
@@ -76,16 +78,20 @@ public class WeatherManager {
         for (World world : plugin.getServer().getWorlds()) {
             if (world.getPlayers().isEmpty()) continue;
 
-            Phase current = phaseByWorld.getOrDefault(world.getUID(), Phase.CALM);
+            Phase previous = phaseByWorld.getOrDefault(world.getUID(), Phase.CALM);
+            Phase current = previous;
 
             if (!world.hasStorm()) {
                 phaseByWorld.put(world.getUID(), Phase.CALM);
                 continue;
             }
 
-            // 비가 내리는 중 - 조용히 격화되거나 약해진다.
+            // 비가 내리는 중 - 대부분은 조용히 한 단계씩 격화/약화되지만,
+            // 아주 가끔은 예고 없이 한 번에 SEVERE_STORM까지 튄다 (매번 똑같이 "서서히"만은 아니게).
             if (current == Phase.CALM) {
                 current = Phase.LIGHT_RAIN;
+            } else if (current != Phase.SEVERE_STORM && rng.nextDouble() < suddenJumpChance) {
+                current = Phase.SEVERE_STORM;
             } else if (current != Phase.SEVERE_STORM && rng.nextDouble() < escalationChance) {
                 current = Phase.values()[current.ordinal() + 1];
             } else if (current != Phase.LIGHT_RAIN && rng.nextDouble() < deescalationChance) {
@@ -93,9 +99,30 @@ public class WeatherManager {
             }
             phaseByWorld.put(world.getUID(), current);
 
+            if (current != previous) {
+                boolean suddenJump = current.ordinal() - previous.ordinal() >= 2;
+                announcePhaseChange(world, current, suddenJump);
+            }
+
             if (current == Phase.STORM || current == Phase.SEVERE_STORM) {
                 applyStormEffects(world, current, rng);
             }
+        }
+    }
+
+    private void announcePhaseChange(World world, Phase newPhase, boolean suddenJump) {
+        if (suddenJump) {
+            com.beotigi.skydisaster.util.ChatAnnouncer.announce(world, "어?? 갑자기?!");
+            return;
+        }
+        String message = switch (newPhase) {
+            case STORM -> "바람이 심상치 않다...";
+            case SEVERE_STORM -> "이러다 뭔가 부러지겠는데...";
+            case LIGHT_RAIN -> "빗방울이 하나둘 떨어지기 시작한다.";
+            case CALM -> null;
+        };
+        if (message != null) {
+            com.beotigi.skydisaster.util.ChatAnnouncer.announce(world, message);
         }
     }
 

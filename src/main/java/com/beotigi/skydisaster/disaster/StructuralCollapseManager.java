@@ -94,6 +94,7 @@ public class StructuralCollapseManager {
             if (mass.size() < MIN_MASS_SIZE) continue;
             if (rng.nextDouble() >= collapseChance) continue;
 
+            com.beotigi.skydisaster.util.ChatAnnouncer.announce(world, "삐걱... 소리가 들린다.");
             shedBlocks(mass, rng);
             return; // 스캔당 한 구조물만 처리 (성능 보호)
         }

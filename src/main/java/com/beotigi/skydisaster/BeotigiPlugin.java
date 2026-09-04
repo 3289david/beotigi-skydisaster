@@ -18,11 +18,13 @@ import com.beotigi.skydisaster.island.IslandManager;
 import com.beotigi.skydisaster.item.SpecialItemManager;
 import com.beotigi.skydisaster.village.TravelingMerchantManager;
 import com.beotigi.skydisaster.village.VillagerMigrationManager;
+import com.beotigi.skydisaster.world.SkyblockWorldManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class BeotigiPlugin extends JavaPlugin {
 
     private IslandManager islandManager;
+    private SkyblockWorldManager skyblockWorldManager;
     private VolcanoManager volcanoManager;
     private IslandDiscoveryManager islandDiscoveryManager;
     private SpecialItemManager specialItemManager;
@@ -45,6 +47,10 @@ public final class BeotigiPlugin extends JavaPlugin {
 
         // --- 생성 순서: 뒤 단계가 앞 단계를 참조하므로 순서가 중요하다 ---
         this.islandManager = new IslandManager(this);
+        this.skyblockWorldManager = new SkyblockWorldManager(this, islandManager);
+        // 다른 시스템이 돌기 전에 월드/시작 섬부터 준비해둔다 - 접속하자마자 바로 플레이 가능하게.
+        skyblockWorldManager.start();
+
         this.volcanoManager = new VolcanoManager(this);
         this.islandDiscoveryManager = new IslandDiscoveryManager(this, volcanoManager);
         this.specialItemManager = new SpecialItemManager(this);
@@ -116,5 +122,6 @@ public final class BeotigiPlugin extends JavaPlugin {
         if (travelingMerchantManager != null) travelingMerchantManager.stop();
         if (skyCreatureManager != null) skyCreatureManager.stop();
         if (nightEventManager != null) nightEventManager.stop();
+        if (skyblockWorldManager != null) skyblockWorldManager.stop();
     }
 }

@@ -17,13 +17,22 @@ public class IslandManager {
         this.plugin = plugin;
     }
 
-    public void createIsland(Player player, IslandType type) {
-        World world = player.getWorld();
+    /** 플레이어 없이, 지형만 짓는다 - 서버가 미리 섬을 준비해둘 때 쓴다. */
+    public void buildIsland(World world, IslandType type) {
         Location center = type.anchor(world);
         buildBase(world, center, type);
         type.decorate(world, center, RADIUS);
+    }
 
-        Location spawn = center.clone().add(0, 2, 0);
+    /** 기존 수동 명령어용 - 짓고, 그 자리로 순간이동시킨다. */
+    public void createIsland(Player player, IslandType type) {
+        World world = player.getWorld();
+        buildIsland(world, type);
+        teleportToIsland(player, world, type);
+    }
+
+    public void teleportToIsland(Player player, World world, IslandType type) {
+        Location spawn = type.anchor(world).clone().add(0, 2, 0);
         player.teleport(spawn);
         player.sendMessage("§7... §f새로운 땅에 발을 디뎠다.");
     }

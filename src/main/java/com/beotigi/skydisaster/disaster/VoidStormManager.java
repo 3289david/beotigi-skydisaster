@@ -77,10 +77,14 @@ public class VoidStormManager {
         secondsRemaining = durationSeconds;
         for (UUID wid : activeWorlds) {
             World world = plugin.getServer().getWorld(wid);
-            if (world != null) world.setStorm(true);
+            if (world != null) {
+                world.setStorm(true);
+                com.beotigi.skydisaster.util.ChatAnnouncer.announce(world, "하늘이 이상하게 어두워진다...");
+            }
         }
 
-        stormTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::tick, 0L, 20L);
+        // 몇 초 뒤부터 실제로 가장자리가 깎여나가기 시작한다.
+        stormTask = plugin.getServer().getScheduler().runTaskTimer(plugin, this::tick, 100L, 20L);
     }
 
     private void tick() {
